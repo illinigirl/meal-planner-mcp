@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Runtime state — your history, plans, and imported recipes live here, never in git.
+state.json
+.meal-planner/
+
+# Generated artifacts
+/meal-plans/
+
+# Personal recipe exports must never be committed (the public repo ships only
+# the small generic seed in data/recipes.seed.json).
+*.csv

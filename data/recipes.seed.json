@@ -1,0 +1,33 @@
+{
+  "_comment": "Bundled starter library — generic recipes so the repo clones-and-runs with zero setup. Your real library imports from a Plan to Eat CSV into gitignored local state (see CLAUDE.md 'Library bootstrap'). Ingredients are structured here; the CSV importer parses free text into this same shape. Overlaps (onion/garlic/canned tomatoes/ground beef/chicken) are intentional so the overlap optimizer has signal.",
+  "recipes": [
+    {"id": "chicken-stir-fry", "title": "Chicken Stir-Fry", "servings": 4, "cuisine": "Asian", "course": "Dinner", "tags": ["quick", "chicken", "asian"], "total_time_min": 30,
+     "ingredients": [{"item": "chicken breast", "qty": 1, "unit": "pound"}, {"item": "bell pepper", "qty": 2}, {"item": "yellow onion", "qty": 1}, {"item": "garlic", "qty": 3, "unit": "clove"}, {"item": "soy sauce", "qty": 3, "unit": "tablespoon"}, {"item": "white rice", "qty": 2, "unit": "cup"}, {"item": "vegetable oil", "qty": 2, "unit": "tablespoon"}]},
+    {"id": "chicken-fajitas", "title": "Chicken Fajitas", "servings": 4, "cuisine": "Mexican", "course": "Dinner", "tags": ["quick", "chicken", "mexican"], "total_time_min": 30,
+     "ingredients": [{"item": "chicken breast", "qty": 1, "unit": "pound"}, {"item": "bell pepper", "qty": 2}, {"item": "yellow onion", "qty": 1}, {"item": "garlic", "qty": 2, "unit": "clove"}, {"item": "flour tortillas", "qty": 8}, {"item": "lime", "qty": 1}]},
+    {"id": "beef-chili", "title": "Beef Chili", "servings": 8, "cuisine": "American", "course": "Dinner", "tags": ["comfort", "batch", "beef"], "total_time_min": 60,
+     "ingredients": [{"item": "ground beef", "qty": 2, "unit": "pound"}, {"item": "yellow onion", "qty": 1}, {"item": "garlic", "qty": 3, "unit": "clove"}, {"item": "canned tomatoes", "qty": 2, "unit": "can"}, {"item": "kidney beans", "qty": 2, "unit": "can"}, {"item": "chili powder", "qty": 2, "unit": "tablespoon"}]},
+    {"id": "spaghetti-bolognese", "title": "Spaghetti Bolognese", "servings": 4, "cuisine": "Italian", "course": "Dinner", "tags": ["italian", "comfort", "beef"], "total_time_min": 45,
+     "ingredients": [{"item": "ground beef", "qty": 1, "unit": "pound"}, {"item": "yellow onion", "qty": 1}, {"item": "garlic", "qty": 3, "unit": "clove"}, {"item": "canned tomatoes", "qty": 1, "unit": "can"}, {"item": "spaghetti", "qty": 1, "unit": "pound"}]},
+    {"id": "veggie-curry", "title": "Chickpea Veggie Curry", "servings": 4, "cuisine": "Indian", "course": "Dinner", "tags": ["vegetarian", "curry"], "total_time_min": 40,
+     "ingredients": [{"item": "chickpeas", "qty": 2, "unit": "can"}, {"item": "yellow onion", "qty": 1}, {"item": "garlic", "qty": 3, "unit": "clove"}, {"item": "canned tomatoes", "qty": 1, "unit": "can"}, {"item": "coconut milk", "qty": 1, "unit": "can"}, {"item": "spinach", "qty": 4, "unit": "cup"}, {"item": "white rice", "qty": 2, "unit": "cup"}]},
+    {"id": "greek-salad", "title": "Greek Salad", "servings": 4, "cuisine": "Greek", "course": "Side", "tags": ["quick", "vegetarian", "salad"], "total_time_min": 15,
+     "ingredients": [{"item": "cucumber", "qty": 1}, {"item": "tomato", "qty": 3}, {"item": "red onion", "qty": 1}, {"item": "feta", "qty": 6, "unit": "ounce"}, {"item": "kalamata olives", "qty": 1, "unit": "cup"}]},
+    {"id": "margherita-pizza", "title": "Margherita Pizza", "servings": 2, "cuisine": "Italian", "course": "Dinner", "tags": ["italian", "vegetarian"], "total_time_min": 30,
+     "ingredients": [{"item": "pizza dough", "qty": 1}, {"item": "canned tomatoes", "qty": 1, "unit": "can"}, {"item": "mozzarella", "qty": 8, "unit": "ounce"}, {"item": "fresh basil", "qty": 1, "unit": "bunch"}]},
+    {"id": "roast-chicken", "title": "Roast Chicken", "servings": 6, "cuisine": "American", "course": "Dinner", "tags": ["batch", "sunday"], "total_time_min": 90,
+     "ingredients": [{"item": "whole chicken", "qty": 1}, {"item": "lemon", "qty": 1}, {"item": "garlic", "qty": 4, "unit": "clove"}, {"item": "carrots", "qty": 4}, {"item": "potatoes", "qty": 6}]},
+    {"id": "chicken-noodle-soup", "title": "Chicken Noodle Soup", "servings": 6, "cuisine": "American", "course": "Dinner", "tags": ["comfort", "leftover-friendly"], "total_time_min": 40,
+     "ingredients": [{"item": "cooked chicken", "qty": 3, "unit": "cup"}, {"item": "carrots", "qty": 3}, {"item": "celery", "qty": 3, "unit": "stalk"}, {"item": "yellow onion", "qty": 1}, {"item": "egg noodles", "qty": 8, "unit": "ounce"}]},
+    {"id": "beef-tacos", "title": "Beef Tacos", "servings": 4, "cuisine": "Mexican", "course": "Dinner", "tags": ["quick", "mexican", "beef"], "total_time_min": 25,
+     "ingredients": [{"item": "ground beef", "qty": 1, "unit": "pound"}, {"item": "yellow onion", "qty": 1}, {"item": "garlic", "qty": 2, "unit": "clove"}, {"item": "taco seasoning", "qty": 1, "unit": "package"}, {"item": "corn tortillas", "qty": 8}, {"item": "cheddar", "qty": 4, "unit": "ounce"}, {"item": "lettuce", "qty": 1, "unit": "head"}]},
+    {"id": "fried-rice", "title": "Veggie Fried Rice", "servings": 4, "cuisine": "Asian", "course": "Dinner", "tags": ["quick", "vegetarian", "asian"], "total_time_min": 20,
+     "ingredients": [{"item": "white rice", "qty": 3, "unit": "cup"}, {"item": "eggs", "qty": 3}, {"item": "frozen peas", "qty": 1, "unit": "cup"}, {"item": "carrots", "qty": 2}, {"item": "yellow onion", "qty": 1}, {"item": "soy sauce", "qty": 3, "unit": "tablespoon"}]},
+    {"id": "caprese-pasta", "title": "Caprese Pasta", "servings": 4, "cuisine": "Italian", "course": "Dinner", "tags": ["quick", "vegetarian", "italian"], "total_time_min": 25,
+     "ingredients": [{"item": "penne", "qty": 1, "unit": "pound"}, {"item": "tomato", "qty": 4}, {"item": "mozzarella", "qty": 8, "unit": "ounce"}, {"item": "fresh basil", "qty": 1, "unit": "bunch"}]},
+    {"id": "shakshuka", "title": "Shakshuka", "servings": 4, "cuisine": "Middle Eastern", "course": "Brunch", "tags": ["vegetarian", "brunch"], "total_time_min": 30,
+     "ingredients": [{"item": "eggs", "qty": 6}, {"item": "canned tomatoes", "qty": 1, "unit": "can"}, {"item": "bell pepper", "qty": 1}, {"item": "yellow onion", "qty": 1}, {"item": "garlic", "qty": 3, "unit": "clove"}]},
+    {"id": "lemon-herb-salmon", "title": "Lemon-Herb Salmon", "servings": 4, "cuisine": "American", "course": "Dinner", "tags": ["quick", "healthy", "fish"], "total_time_min": 25,
+     "ingredients": [{"item": "salmon fillet", "qty": 4}, {"item": "lemon", "qty": 1}, {"item": "garlic", "qty": 2, "unit": "clove"}, {"item": "asparagus", "qty": 1, "unit": "bunch"}]}
+  ]
+}

@@ -1,0 +1,4 @@
+# The MCP server needs the MCP SDK (FastMCP lives in `mcp`).
+# The pure core + CLI run on the standard library alone — no install needed to
+# use `python -m mealplanner.cli` or to run the test suite.
+mcp>=1.0
