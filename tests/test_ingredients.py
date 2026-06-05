@@ -68,6 +68,10 @@ class TestCanonicalItem:
     def test_irregular_plural(self):
         assert canonical_item("Eggs") == "egg"
 
+    def test_us_ending_not_over_stripped(self):
+        # "asparagus" isn't a plural — don't turn it into "asparagu".
+        assert canonical_item("asparagus") == "asparagus"
+
     def test_keeps_distinguishing_color(self):
         # red onion vs yellow onion are different purchases — don't collapse.
         assert canonical_item("red onion") != canonical_item("yellow onion")

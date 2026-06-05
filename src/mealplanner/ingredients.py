@@ -154,9 +154,14 @@ def canonical_item(item: str) -> str:
     s = re.sub(r"[^a-z\s/-]", " ", s)
     words = [w for w in s.split() if w and w not in _DESCRIPTORS]
     words = [_SINGULAR.get(w, w) for w in words]
-    # Naive regular plural: trailing 's' (but not 'ss' like "grass").
-    words = [w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w
-             for w in words]
+    # Naive regular plural: strip a trailing 's' — but not for words ending in
+    # 'ss' (grass), 'us' (asparagus), or 'is' (couscous-ish / analysis), which
+    # aren't plurals.
+    words = [
+        w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith(("ss", "us", "is"))
+        else w
+        for w in words
+    ]
     return " ".join(words).strip()
 
 
