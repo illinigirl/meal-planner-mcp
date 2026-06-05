@@ -57,6 +57,21 @@ class TestPlanWeek:
         for d in cook_days(plan):
             assert "vegetarian" in idx[d.recipe_id].tags
 
+    NON_MAINS = {"greek-salad", "quick-marinara", "chocolate-chip-cookies"}
+
+    def test_main_course_only_excludes_sides_sauces_desserts(self, library):
+        # Seed has a Side, a Sauce, and a Dessert — none should be cooked as a
+        # dinner when main_course_only is on (the default).
+        plan = plan_week(library, days=7, start_date=date(2026, 6, 8), main_course_only=True)
+        cooked = {d.recipe_id for d in cook_days(plan)}
+        assert not (cooked & self.NON_MAINS)
+
+    def test_main_course_only_off_allows_them(self, library):
+        # With the gate off, the non-main recipes become eligible again.
+        plan = plan_week(library, days=14, start_date=date(2026, 6, 8), main_course_only=False)
+        cooked = {d.recipe_id for d in cook_days(plan)}
+        assert cooked & self.NON_MAINS
+
 
 class TestShoppingList:
     def test_excludes_leftover_days(self):

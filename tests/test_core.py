@@ -4,13 +4,27 @@ avoid-repeats)."""
 from datetime import date
 
 from mealplanner.core import (
+    is_main_course,
     overlap_score,
     recent_recipe_ids,
     recipe_index,
     search_recipes,
     shopping_ingredients,
 )
-from mealplanner.models import HistoryEntry
+from mealplanner.models import HistoryEntry, Recipe
+
+
+class TestIsMainCourse:
+    def test_dinner_is_main(self):
+        assert is_main_course(Recipe(id="x", title="X", servings=4, ingredients=[], course="Dinner"))
+
+    def test_sauce_is_not_main(self):
+        assert not is_main_course(Recipe(id="x", title="X", servings=1, ingredients=[], course="Sauces"))
+
+    def test_unknown_course_defaults_to_main(self):
+        # Source-independent: a recipe with no course (e.g. added conversationally
+        # without one) is included rather than silently dropped.
+        assert is_main_course(Recipe(id="x", title="X", servings=4, ingredients=[], course=None))
 
 
 class TestSearch:

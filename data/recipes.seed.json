@@ -1,5 +1,5 @@
 {
-  "_comment": "Bundled starter library — generic recipes so the repo clones-and-runs with zero setup. Your real library imports from a Plan to Eat CSV into gitignored local state (see CLAUDE.md 'Library bootstrap'). Ingredients are structured here; the CSV importer parses free text into this same shape. Overlaps (onion/garlic/canned tomatoes/ground beef/chicken) are intentional so the overlap optimizer has signal.",
+  "_comment": "Bundled starter library — generic recipes so the repo clones-and-runs with zero setup. Your real library imports from a Plan to Eat CSV (or add_recipe) into gitignored local state (see CLAUDE.md 'Seeding the library'). Ingredients are structured here; the CSV importer parses free text into this same shape. Overlaps (onion/garlic/canned tomatoes/ground beef/chicken) are intentional so the overlap optimizer has signal. A Side, a Sauce, and a Dessert are included on purpose so the main-course filter has clear non-mains to exclude.",
   "recipes": [
     {"id": "chicken-stir-fry", "title": "Chicken Stir-Fry", "servings": 4, "cuisine": "Asian", "course": "Dinner", "tags": ["quick", "chicken", "asian"], "total_time_min": 30,
      "ingredients": [{"item": "chicken breast", "qty": 1, "unit": "pound"}, {"item": "bell pepper", "qty": 2}, {"item": "yellow onion", "qty": 1}, {"item": "garlic", "qty": 3, "unit": "clove"}, {"item": "soy sauce", "qty": 3, "unit": "tablespoon"}, {"item": "white rice", "qty": 2, "unit": "cup"}, {"item": "vegetable oil", "qty": 2, "unit": "tablespoon"}]},
@@ -25,9 +25,13 @@
      "ingredients": [{"item": "white rice", "qty": 3, "unit": "cup"}, {"item": "eggs", "qty": 3}, {"item": "frozen peas", "qty": 1, "unit": "cup"}, {"item": "carrots", "qty": 2}, {"item": "yellow onion", "qty": 1}, {"item": "soy sauce", "qty": 3, "unit": "tablespoon"}]},
     {"id": "caprese-pasta", "title": "Caprese Pasta", "servings": 4, "cuisine": "Italian", "course": "Dinner", "tags": ["quick", "vegetarian", "italian"], "total_time_min": 25,
      "ingredients": [{"item": "penne", "qty": 1, "unit": "pound"}, {"item": "tomato", "qty": 4}, {"item": "mozzarella", "qty": 8, "unit": "ounce"}, {"item": "fresh basil", "qty": 1, "unit": "bunch"}]},
-    {"id": "shakshuka", "title": "Shakshuka", "servings": 4, "cuisine": "Middle Eastern", "course": "Brunch", "tags": ["vegetarian", "brunch"], "total_time_min": 30,
+    {"id": "shakshuka", "title": "Shakshuka", "servings": 4, "cuisine": "Middle Eastern", "course": "Dinner", "tags": ["vegetarian", "quick"], "total_time_min": 30,
      "ingredients": [{"item": "eggs", "qty": 6}, {"item": "canned tomatoes", "qty": 1, "unit": "can"}, {"item": "bell pepper", "qty": 1}, {"item": "yellow onion", "qty": 1}, {"item": "garlic", "qty": 3, "unit": "clove"}]},
     {"id": "lemon-herb-salmon", "title": "Lemon-Herb Salmon", "servings": 4, "cuisine": "American", "course": "Dinner", "tags": ["quick", "healthy", "fish"], "total_time_min": 25,
-     "ingredients": [{"item": "salmon fillet", "qty": 4}, {"item": "lemon", "qty": 1}, {"item": "garlic", "qty": 2, "unit": "clove"}, {"item": "asparagus", "qty": 1, "unit": "bunch"}]}
+     "ingredients": [{"item": "salmon fillet", "qty": 4}, {"item": "lemon", "qty": 1}, {"item": "garlic", "qty": 2, "unit": "clove"}, {"item": "asparagus", "qty": 1, "unit": "bunch"}]},
+    {"id": "quick-marinara", "title": "Quick Marinara Sauce", "servings": 4, "cuisine": "Italian", "course": "Sauce", "tags": ["vegetarian", "sauce"], "total_time_min": 25,
+     "ingredients": [{"item": "canned tomatoes", "qty": 2, "unit": "can"}, {"item": "garlic", "qty": 4, "unit": "clove"}, {"item": "yellow onion", "qty": 1}, {"item": "olive oil", "qty": 2, "unit": "tablespoon"}, {"item": "fresh basil", "qty": 1, "unit": "bunch"}]},
+    {"id": "chocolate-chip-cookies", "title": "Chocolate Chip Cookies", "servings": 24, "cuisine": "American", "course": "Dessert", "tags": ["dessert", "baking"], "total_time_min": 30,
+     "ingredients": [{"item": "flour", "qty": 2, "unit": "cup"}, {"item": "butter", "qty": 1, "unit": "cup"}, {"item": "sugar", "qty": 1, "unit": "cup"}, {"item": "eggs", "qty": 2}, {"item": "chocolate chips", "qty": 2, "unit": "cup"}, {"item": "vanilla", "qty": 1, "unit": "teaspoon"}]}
   ]
 }

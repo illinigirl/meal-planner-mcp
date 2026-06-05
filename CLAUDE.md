@@ -106,6 +106,18 @@ Three paths, deliberately not tied to any one app or format:
   ships read-only so the repo runs cold; your history/plans/imported recipes go
   in a gitignored `state.json` in a user dir. Personal recipe data never lands
   in a public commit.
+- **Conversational iteration is first-class.** `plan_week` makes the week;
+  `swap_meal` / `remove_meal` are literal per-day overrides for "put tacos on
+  Tuesday / skip Thursday." The rule that keeps edits predictable: only
+  `plan_week` auto-manages leftovers; manual edits touch just the named day.
+  "Make Friday quicker" composes existing tools (`suggest_recipes` → `swap_meal`)
+  rather than adding a bespoke one.
+- **Main-course filter is course-based, source-independent — not title
+  matching.** `course` is our normalized field; every ingest path fills it (Plan
+  to Eat import maps it; `add_recipe` takes it from the LLM, which knows a sauce
+  from a main; `set_course` curates). Unknown course → treated as a main, so a
+  real dinner is never silently dropped. Title keyword-matching is deliberately
+  avoided — it misclassifies "Noodles with Sesame Sauce."
 
 ## Conventions
 

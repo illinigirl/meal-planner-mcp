@@ -126,6 +126,49 @@ def add_custom_recipe(recipe: Recipe) -> None:
     save_state(state)
 
 
+def set_recipe_course(recipe_id: str, course: str) -> bool:
+    """Curate a recipe's course (e.g. mark an uncategorized import as a sauce so
+    the planner stops treating it as a dinner). Only custom recipes are editable;
+    seed recipes are read-only. Returns True if updated."""
+    state = load_state()
+    for r in state.get("custom_recipes", []):
+        if r["id"] == recipe_id:
+            r["course"] = course
+            save_state(state)
+            return True
+    return False
+
+
+# ── Plan edits (conversational iteration) ───────────────────────────
+
+def swap_meal(date: str, recipe_id: str, servings: int | None) -> list[PlanDay]:
+    """Set one calendar day to a cook of `recipe_id` (a literal override — clears
+    any leftover marking on that day). Appends the day if it wasn't in the plan."""
+    state = load_state()
+    plan = state.get("current_plan", [])
+    for d in plan:
+        if d["date"] == date:
+            d.update(recipe_id=recipe_id, servings=servings, leftover_of=None)
+            break
+    else:
+        plan.append({"date": date, "recipe_id": recipe_id, "servings": servings, "leftover_of": None})
+        plan.sort(key=lambda x: x["date"])
+    state["current_plan"] = plan
+    save_state(state)
+    return load_plan()
+
+
+def remove_meal(date: str) -> list[PlanDay]:
+    """Clear one day (eating out, skipping). The date stays in the plan as
+    unplanned so the week's shape is preserved."""
+    state = load_state()
+    for d in state.get("current_plan", []):
+        if d["date"] == date:
+            d.update(recipe_id=None, servings=None, leftover_of=None)
+    save_state(state)
+    return load_plan()
+
+
 # ── CSV import (Plan to Eat export) ─────────────────────────────────
 
 def _slug(title: str) -> str:

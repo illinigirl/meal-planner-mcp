@@ -36,9 +36,16 @@ the private data, the memory, the persisted artifact, and the exact arithmetic.
   ingredients with what's already chosen, skips anything cooked recently, and
   fills extra nights from serving-surplus leftovers (a batch of chili that
   serves 8 covers two dinners for a family of four).
+- **`swap_meal` / `remove_meal`** — iterate per day: *"put tacos on Tuesday,"
+  "skip Thursday."* The plan, shopping list, and export all update with you.
+  ("Make Friday quicker" needs no new tool — Claude calls `suggest_recipes`
+  then `swap_meal`.)
 - **`generate_shopping_list`** — merges and scales ingredients across the plan's
   cook days, deduped, with no silent unit conversion.
 - **`export_plan`** — writes the week + shopping list to Markdown.
+- **`set_course`** — recategorize a recipe (mark a stray import as a `Sauce` so
+  it stops landing in dinner slots). Curation; the planner relies on this
+  normalized field, never on title guessing.
 - **`suggest_recipes` / `list_recipes` / `get_recipe`** — query the library.
 - **`record_cooked`** — log what you actually made; this is the memory that
   powers avoid-repeats.

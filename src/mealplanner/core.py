@@ -22,6 +22,28 @@ PANTRY_STAPLES = {
 }
 
 
+# Courses that aren't a dinner anchor — excluded from planning by default so a
+# sauce or side never gets planned as the main meal.
+#
+# Deliberately NOT keyword-on-title (which misclassifies "Noodles with Sesame
+# Sauce" as a sauce). `course` is OUR normalized field, populated by whatever
+# ingest path created the recipe: Plan to Eat import maps its Course, add_recipe
+# takes one from the LLM (which knows a sauce from a main), set_course fixes
+# stragglers. A recipe with NO course is treated as a main — better to include a
+# real dinner than silently drop it; curate with set_course if needed.
+NON_MAIN_COURSES = {
+    "sauce", "sauces", "dessert", "desserts", "side", "side dish", "sides",
+    "breakfast", "brunch", "drink", "drinks", "beverage", "beverages",
+    "condiment", "condiments", "dressing", "dressings", "snack", "snacks",
+    "appetizer", "appetizers",
+}
+
+
+def is_main_course(recipe: Recipe) -> bool:
+    """True if a recipe is a plausible dinner anchor (a main, or uncategorized)."""
+    return (recipe.course or "").strip().lower() not in NON_MAIN_COURSES
+
+
 def recipe_index(library: list[Recipe]) -> dict[str, Recipe]:
     return {r.id: r for r in library}
 
