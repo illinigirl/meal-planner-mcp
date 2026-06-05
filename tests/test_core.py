@@ -74,17 +74,27 @@ class TestShoppingIngredients:
         assert "yellow onion" in ings
 
 
+class TestSeedData:
+    def test_every_seed_recipe_has_directions(self, library):
+        missing = [r.id for r in library if not (r.directions or "").strip()]
+        assert not missing, f"seed recipes missing directions: {missing}"
+
+    def test_no_seed_recipe_claims_a_cuisine(self, library):
+        # Deliberately generic sample data — no ethnic-cuisine authenticity claims.
+        assert all(r.cuisine is None for r in library)
+
+
 class TestOverlap:
     def test_counts_shared_non_pantry(self, library):
         idx = recipe_index(library)
         stir = idx["chicken-stir-fry"]
-        fajitas = idx["chicken-fajitas"]
+        sheet_pan = idx["sheet-pan-chicken-peppers"]
         # share: chicken breast, bell pepper, yellow onion, garlic
-        assert overlap_score(fajitas, [stir]) == 4
+        assert overlap_score(sheet_pan, [stir]) == 4
 
     def test_zero_for_first_pick(self, library):
         idx = recipe_index(library)
-        assert overlap_score(idx["greek-salad"], []) == 0
+        assert overlap_score(idx["cucumber-feta-salad"], []) == 0
 
 
 class TestRecentIds:

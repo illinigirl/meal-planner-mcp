@@ -57,7 +57,7 @@ class TestPlanWeek:
         for d in cook_days(plan):
             assert "vegetarian" in idx[d.recipe_id].tags
 
-    NON_MAINS = {"greek-salad", "quick-marinara", "chocolate-chip-cookies"}
+    NON_MAINS = {"cucumber-feta-salad", "quick-tomato-sauce", "chocolate-chip-cookies"}
 
     def test_main_course_only_excludes_sides_sauces_desserts(self, library):
         # Seed has a Side, a Sauce, and a Dessert — none should be cooked as a

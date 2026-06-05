@@ -82,7 +82,7 @@ def test_set_course_on_seed_returns_false(tmp_state):
 def test_swap_meal_overrides_day(tmp_state):
     store.save_plan([
         PlanDay(date="2026-06-08", recipe_id="beef-tacos", servings=4),
-        PlanDay(date="2026-06-09", recipe_id="greek-salad", servings=4),
+        PlanDay(date="2026-06-09", recipe_id="cucumber-feta-salad", servings=4),
     ])
     plan = store.swap_meal("2026-06-09", "chicken-stir-fry", 4)
     by_date = {d.date: d for d in plan}
