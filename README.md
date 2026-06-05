@@ -35,14 +35,19 @@ the private data, the memory, the persisted artifact, and the exact arithmetic.
 - **`plan_week`** — greedy optimizer: picks recipes that share the most
   ingredients with what's already chosen, skips anything cooked recently, and
   fills extra nights from serving-surplus leftovers (a batch of chili that
-  serves 8 covers two dinners for a family of four).
+  serves 8 covers two dinners for a family of four). The overlap objective
+  *rewards similar recipes*, so it clusters same-protein nights by design;
+  `diversity_weight` (off by default) dials in variety vs. waste.
 - **`swap_meal` / `remove_meal`** — iterate per day: *"put tacos on Tuesday,"
   "skip Thursday."* The plan, shopping list, and export all update with you.
   ("Make Friday quicker" needs no new tool — Claude calls `suggest_recipes`
   then `swap_meal`.)
 - **`generate_shopping_list`** — merges and scales ingredients across the plan's
   cook days, deduped, with no silent unit conversion.
-- **`export_plan`** — writes the week + shopping list to Markdown.
+- **`export_plan`** — writes the week + shopping list to Markdown **and returns
+  it inline**, so a remote caller who can't read the server's disk still gets the
+  content. With no path it writes to a known location under the data dir (not the
+  process cwd, which is unpredictable when Claude Desktop launches the server).
 - **`set_course`** — recategorize a recipe (mark a stray import as a `Sauce` so
   it stops landing in dinner slots). Curation; the planner relies on this
   normalized field, never on title guessing.
@@ -51,8 +56,10 @@ the private data, the memory, the persisted artifact, and the exact arithmetic.
   powers avoid-repeats.
 - **`add_recipe`** — save one recipe from free text. The everyday way to build
   your library — no file or format needed.
-- **`import_recipes`** — optional bulk shortcut for migrating an existing Plan
-  to Eat CSV export (offline, no scraping).
+- **`import_recipes`** — optional bulk shortcut for an existing Plan to Eat
+  export: by `csv_path` (a file on the server — local use) or `csv_content`
+  (pasted CSV text — works for a remote caller with no server-disk access).
+  Offline, no scraping.
 
 ## Seeding your library
 

@@ -16,7 +16,13 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from .core import is_main_course, overlap_score, recent_recipe_ids, search_recipes
+from .core import (
+    is_main_course,
+    overlap_score,
+    recent_recipe_ids,
+    recipe_proteins,
+    search_recipes,
+)
 from .models import HistoryEntry, PlanDay, Recipe
 
 
@@ -40,6 +46,7 @@ def plan_week(
     exclude_tags: list[str] | None = None,
     max_time: int | None = None,
     main_course_only: bool = True,
+    diversity_weight: float = 0.0,
 ) -> list[PlanDay]:
     """Produce a `days`-long plan, greedily maximizing ingredient overlap while
     skipping recently-cooked recipes and filling extra days with leftovers.
@@ -47,6 +54,13 @@ def plan_week(
     `main_course_only` (default True) keeps sauces/sides/desserts out of the
     dinner slots — see core.is_main_course (course-based, source-independent;
     unknown course counts as a main).
+
+    `diversity_weight` (default 0.0 = off) trades waste for variety. The base
+    objective — maximize ingredient overlap — *rewards similar recipes*, so it
+    naturally clusters same-protein nights (overlap and variety are opposing
+    objectives). A weight > 0 subtracts a penalty for repeating a protein already
+    in the week, letting you dial the balance. At 0.0 behavior is pure overlap
+    (the intentional default: repeating proteins is fine).
 
     Returns a PlanDay per calendar day: cook days carry `recipe_id` + `servings`;
     leftover days carry `recipe_id` + `leftover_of` (the cook date they reuse).
@@ -76,9 +90,21 @@ def plan_week(
             pool = [r for r in library if r.id not in used_ids and eligible(r)]
             if not pool:
                 break
-        # Greedy pick: most ingredient overlap with what's chosen, tie-broken
-        # toward quicker recipes for a tidy, deterministic result.
-        pick = max(pool, key=lambda r: (overlap_score(r, chosen_cooks), -(r.total_time_min or 0)))
+        # Greedy pick: ingredient overlap with what's chosen, minus an optional
+        # protein-repetition penalty, tie-broken toward quicker recipes for a
+        # tidy, deterministic result.
+        chosen_proteins: set[str] = set()
+        if diversity_weight:
+            for c in chosen_cooks:
+                chosen_proteins |= recipe_proteins(c)
+
+        def score(r: Recipe):
+            combined = overlap_score(r, chosen_cooks)
+            if diversity_weight:
+                combined -= diversity_weight * len(recipe_proteins(r) & chosen_proteins)
+            return (combined, -(r.total_time_min or 0))
+
+        pick = max(pool, key=score)
         used_ids.add(pick.id)
         chosen_cooks.append(pick)
 

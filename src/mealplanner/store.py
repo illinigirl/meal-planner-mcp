@@ -216,13 +216,9 @@ def parse_plantoeat_rows(rows: list[dict]) -> list[Recipe]:
     return out
 
 
-def import_plantoeat_csv(path: str) -> int:
-    """Bulk-import a Plan to Eat CSV into custom_recipes. Returns the count
-    added. This is the library-bootstrap path — one offline command instead of
-    hand-entering hundreds of recipes."""
-    with open(path, newline="", encoding="utf-8") as fh:
-        rows = list(csv.DictReader(fh))
-    recipes = parse_plantoeat_rows(rows)
+def _add_parsed_recipes(recipes: list[Recipe]) -> int:
+    """Append recipes to custom_recipes, skipping ids already present. Returns
+    the count added. Shared by the path and content importers."""
     state = load_state()
     existing = {r["id"] for r in state.get("custom_recipes", [])}
     added = 0
@@ -234,3 +230,28 @@ def import_plantoeat_csv(path: str) -> int:
         added += 1
     save_state(state)
     return added
+
+
+def import_plantoeat_csv(path: str) -> int:
+    """Bulk-import a Plan to Eat CSV by path — LOCAL use (the file is on the
+    server's filesystem). For a remote caller, use import_plantoeat_content."""
+    with open(path, newline="", encoding="utf-8") as fh:
+        rows = list(csv.DictReader(fh))
+    return _add_parsed_recipes(parse_plantoeat_rows(rows))
+
+
+def import_plantoeat_content(content: str) -> int:
+    """Bulk-import from Plan to Eat CSV *text* — works for a remote caller who
+    can't reach the server's filesystem (they paste the export's contents)."""
+    import io
+    rows = list(csv.DictReader(io.StringIO(content)))
+    return _add_parsed_recipes(parse_plantoeat_rows(rows))
+
+
+def export_default_path(first_date: str) -> Path:
+    """Where export_plan writes when no path is given: a KNOWN location under the
+    data dir (not the server's cwd, which is unpredictable when Claude Desktop
+    launches the process). Creates the dir."""
+    d = data_dir() / "meal-plans"
+    d.mkdir(parents=True, exist_ok=True)
+    return d / f"{first_date}.md"

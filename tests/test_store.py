@@ -43,6 +43,24 @@ def test_csv_import_is_one_of_several_paths(tmp_state, tmp_path):
     assert any(r.id == "my-soup" for r in store.load_library())
 
 
+def test_import_content_adds_recipes(tmp_state):
+    # Remote-friendly import: paste the CSV text, no server filesystem needed.
+    content = (
+        "Title,Ingredients,Servings,Total Time,Tags,Cuisine,Course\n"
+        'Pasted Stew,"1 lb beef\n2 carrots",6,90,stew,American,Dinner\n'
+    )
+    added = store.import_plantoeat_content(content)
+    assert added == 1
+    assert any(r.id == "pasted-stew" for r in store.load_library())
+
+
+def test_export_default_path_under_data_dir(tmp_state):
+    p = store.export_default_path("2026-06-08")
+    assert str(p).startswith(str(tmp_state))      # known location, not cwd
+    assert p.name == "2026-06-08.md"
+    assert p.parent.is_dir()                       # created
+
+
 def test_set_course_updates_custom_recipe(tmp_state):
     store.add_custom_recipe(
         Recipe(id="mystery-jus", title="Mystery Jus", servings=1, ingredients=[], course=None)

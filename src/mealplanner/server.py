@@ -81,20 +81,23 @@ def suggest_recipes(max_time: int | None = None, include_tags: list[str] | None 
 def plan_week(days: int = 7, household_size: int = 4, start_date: str | None = None,
               include_tags: list[str] | None = None, exclude_tags: list[str] | None = None,
               max_time: int | None = None, avoid_recent_days: int = 14,
-              main_course_only: bool = True) -> dict:
+              main_course_only: bool = True, diversity_weight: float = 0.0) -> dict:
     """Build and save a meal plan, optimizing ingredient overlap, reusing
     serving-surplus leftovers, and avoiding recently-cooked recipes.
 
     `main_course_only` (default true) keeps sauces/sides/desserts out of dinner
-    slots. Saves as the current plan; tweak it with swap_meal / remove_meal, or
-    re-call with new constraints. generate_shopping_list / export_plan use it.
+    slots. `diversity_weight` (default 0 = off) trades waste for variety: the
+    overlap objective rewards similar recipes, so it clusters same-protein
+    nights; a weight > 0 penalizes repeating a protein within the week. Saves as
+    the current plan; tweak with swap_meal / remove_meal or re-call with new
+    constraints. generate_shopping_list / export_plan use it.
     """
     sd = date.fromisoformat(start_date) if start_date else date.today()
     lib = store.load_library()
     plan = _plan_week(lib, days=days, start_date=sd, household_size=household_size,
                       history=store.history_entries(), avoid_recent_days=avoid_recent_days,
                       include_tags=include_tags, exclude_tags=exclude_tags, max_time=max_time,
-                      main_course_only=main_course_only)
+                      main_course_only=main_course_only, diversity_weight=diversity_weight)
     store.save_plan(plan)
     idx = core.recipe_index(lib)
     return {"days": [
@@ -129,17 +132,24 @@ def generate_shopping_list() -> dict:
 
 @mcp.tool()
 def export_plan(path: str | None = None) -> dict:
-    """Write the current plan + shopping list to a Markdown file (the fridge
-    copy). Defaults to ./meal-plans/<start-date>.md."""
+    """Write the current plan + shopping list to Markdown AND return the rendered
+    Markdown inline.
+
+    With no `path`, writes to a known location under the data dir
+    (MEAL_PLANNER_DATA_DIR/meal-plans/<date>.md) — not the process cwd, which is
+    unpredictable when Claude Desktop launches the server. The `markdown` field
+    is always returned, so a remote caller who can't read the server's disk still
+    gets the content to display or save client-side."""
     plan = store.load_plan()
     if not plan:
         return {"error": "no current plan — call plan_week first"}
     idx = core.recipe_index(store.load_library())
     from pathlib import Path
-    out = Path(path) if path else Path("meal-plans") / f"{plan[0].date}.md"
+    md = render_plan_markdown(plan, idx, title=f"Meal Plan — week of {plan[0].date}")
+    out = Path(path) if path else store.export_default_path(plan[0].date)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render_plan_markdown(plan, idx, title=f"Meal Plan — week of {plan[0].date}"))
-    return {"written": str(out)}
+    out.write_text(md)
+    return {"written": str(out), "markdown": md}
 
 
 @mcp.tool()
@@ -215,11 +225,19 @@ def remove_meal(date: str) -> dict:
 
 
 @mcp.tool()
-def import_recipes(csv_path: str) -> dict:
+def import_recipes(csv_path: str | None = None, csv_content: str | None = None) -> dict:
     """Optional bulk shortcut: import many recipes from a Plan to Eat CSV export.
-    Most users seed with add_recipe instead — this is just a convenience for
-    people who already have an export to migrate."""
-    added = store.import_plantoeat_csv(csv_path)
+    Most users seed with add_recipe instead.
+
+    `csv_path` reads a file on the SERVER's filesystem (local use). `csv_content`
+    takes the CSV text directly — use this from a remote client that can't reach
+    the server's disk (paste the export's contents)."""
+    if csv_content:
+        added = store.import_plantoeat_content(csv_content)
+    elif csv_path:
+        added = store.import_plantoeat_csv(csv_path)
+    else:
+        return {"error": "provide csv_path (local file) or csv_content (pasted CSV text)"}
     return {"imported": added}
 
 

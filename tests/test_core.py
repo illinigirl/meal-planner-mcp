@@ -8,10 +8,26 @@ from mealplanner.core import (
     overlap_score,
     recent_recipe_ids,
     recipe_index,
+    recipe_proteins,
     search_recipes,
     shopping_ingredients,
 )
-from mealplanner.models import HistoryEntry, Recipe
+from mealplanner.models import HistoryEntry, Ingredient, Recipe
+
+
+class TestRecipeProteins:
+    def _r(self, *items):
+        return Recipe(id="x", title="X", servings=4,
+                      ingredients=[Ingredient(item=i) for i in items])
+
+    def test_detects_protein_in_ingredient_name(self):
+        assert recipe_proteins(self._r("chicken breast", "onion")) == {"chicken"}
+
+    def test_multiple_proteins(self):
+        assert recipe_proteins(self._r("ground beef", "kidney beans")) == {"beef", "bean"}
+
+    def test_none_for_veg_dish(self):
+        assert recipe_proteins(self._r("tomato", "basil", "mozzarella")) == set()
 
 
 class TestIsMainCourse:

@@ -94,6 +94,18 @@ Three paths, deliberately not tied to any one app or format:
   skipping recently-cooked ones, tie-broken toward quicker recipes. Greedy is
   explainable and fast; an optimal week (ILP) is the documented upgrade and is
   overkill at household scale.
+- **Overlap vs. variety is an explicit, tunable tradeoff.** The base objective —
+  maximize ingredient overlap — *rewards similar recipes*, so it naturally
+  clusters same-protein nights. That's not a bug; repeating proteins is fine by
+  default. `diversity_weight` (0 = off, the default) subtracts a penalty for
+  repeating a protein already in the week, letting the caller dial waste vs.
+  variety. Two opposing objectives, made explicit and tunable rather than hidden.
+- **Server-side I/O degrades gracefully for remote callers.** `export_plan`
+  returns the rendered Markdown inline (not just a path) and defaults to a known
+  data-dir location, not the process cwd — so a caller who can't read the
+  server's disk still gets the content. `import_recipes` accepts pasted
+  `csv_content`, not only a server-side `csv_path`. The split matters once
+  someone *runs* the server remotely rather than just reading the repo.
 - **Deterministic math in the data plane; the LLM narrates.** Ingredient
   merging, serving-scaling, and overlap counting are exact functions, never
   left to the model. The model's job is selection and conversation.

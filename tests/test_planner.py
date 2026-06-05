@@ -3,7 +3,7 @@ Plan to Eat CSV parser."""
 
 from datetime import date
 
-from mealplanner.core import recipe_index
+from mealplanner.core import recipe_index, recipe_proteins
 from mealplanner.exports import build_shopping_list, render_plan_markdown
 from mealplanner.models import HistoryEntry, Ingredient, Recipe
 from mealplanner.planner import cook_days, nights_covered, plan_week
@@ -71,6 +71,37 @@ class TestPlanWeek:
         plan = plan_week(library, days=14, start_date=date(2026, 6, 8), main_course_only=False)
         cooked = {d.recipe_id for d in cook_days(plan)}
         assert cooked & self.NON_MAINS
+
+
+class TestDiversity:
+    # Two chicken mains + two beef mains, all sharing onion/garlic so overlap is
+    # comparable — isolates the protein-diversity knob.
+    LIB = [
+        _r("chick-a", 4, 30, ["chicken breast", "onion", "garlic", "rice"]),
+        _r("chick-b", 4, 30, ["chicken breast", "onion", "garlic", "bell pepper"]),
+        _r("beef-a", 4, 30, ["ground beef", "onion", "garlic", "rice"]),
+        _r("beef-b", 4, 30, ["ground beef", "onion", "garlic", "bell pepper"]),
+    ]
+
+    def _cook_proteins(self, plan):
+        idx = recipe_index(self.LIB)
+        return [recipe_proteins(idx[d.recipe_id]) for d in cook_days(plan)]
+
+    def test_weight_zero_clusters_same_protein(self):
+        # Pure overlap (the default) rewards similar recipes → chicken back-to-back.
+        plan = plan_week(self.LIB, days=4, start_date=date(2026, 6, 8),
+                         household_size=4, diversity_weight=0.0, main_course_only=False)
+        proteins = self._cook_proteins(plan)
+        assert proteins[0] & proteins[1]   # first two cooks share a protein
+
+    def test_high_weight_avoids_adjacent_repeats(self):
+        # Turning the knob up trades waste for variety: no two consecutive cooks
+        # share a protein.
+        plan = plan_week(self.LIB, days=4, start_date=date(2026, 6, 8),
+                         household_size=4, diversity_weight=5.0, main_course_only=False)
+        proteins = self._cook_proteins(plan)
+        for a, b in zip(proteins, proteins[1:]):
+            assert not (a & b)
 
 
 class TestShoppingList:

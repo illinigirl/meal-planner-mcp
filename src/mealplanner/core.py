@@ -44,6 +44,23 @@ def is_main_course(recipe: Recipe) -> bool:
     return (recipe.course or "").strip().lower() not in NON_MAIN_COURSES
 
 
+# Protein keywords for the optional diversity penalty. A recipe's "proteins" are
+# the keywords that appear in its (canonical) ingredient names — "chicken breast"
+# → chicken, "ground beef" → beef, "kidney beans" → bean. Coarse on purpose; it
+# only needs to answer "is this another chicken night?"
+PROTEIN_KEYWORDS = {
+    "chicken", "beef", "pork", "salmon", "tuna", "fish", "shrimp", "tofu",
+    "egg", "chickpea", "bean", "lentil", "turkey", "sausage", "bacon",
+}
+
+
+def recipe_proteins(recipe: Recipe) -> set[str]:
+    """The protein keywords present in a recipe — used by the (off-by-default)
+    diversity penalty to discourage, e.g., two chicken nights in a row."""
+    names = " ".join(canonical_item(ing.item) for ing in recipe.ingredients)
+    return {kw for kw in PROTEIN_KEYWORDS if kw in names}
+
+
 def recipe_index(library: list[Recipe]) -> dict[str, Recipe]:
     return {r.id: r for r in library}
 

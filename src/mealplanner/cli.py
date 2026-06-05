@@ -70,7 +70,7 @@ def cmd_export(args):
         return
     from pathlib import Path
     idx = core.recipe_index(store.load_library())
-    out = Path(args.path) if args.path else Path("meal-plans") / f"{plan[0].date}.md"
+    out = Path(args.path) if args.path else store.export_default_path(plan[0].date)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render_plan_markdown(plan, idx, title=f"Meal Plan — week of {plan[0].date}"))
     print(f"Wrote {out}")
