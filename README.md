@@ -17,31 +17,30 @@ python -m mealplanner.cli shopping                    # and the shopping list
 
 ## Example
 
-It ships with a seed library, so it does something the moment you clone it — no
-data entry. The planner chains dishes that **share ingredients** (note the two
-fried-rice nights) and the shopping list is **consolidated across the week**:
+It ships with a seed library, so it plans the moment you clone it — no data
+entry. The planner optimizes for **ingredient overlap** across the week, then
+**consolidates** everything into one deduplicated shopping list:
 
 ```text
 $ python -m mealplanner.cli plan --days 5
 
 Plan for 5 days (household 4):
 
-  2026-06-05   Chicken Fried Rice  (serves 1)
-  2026-06-06   Kimchi Fried Rice  (serves 1)
-  2026-06-07   Pressure Cooker Honey Sesame Chicken  (serves 6)
-  2026-06-08   Pressure Cooker Beef and Broccoli  (serves 6)
-  2026-06-09   Crispy Asian Chicken Bites  (serves 4)
+  2026-06-05   Veggie Fried Rice  (serves 4)
+  2026-06-06   Chicken Stir-Fry  (serves 4)
+  2026-06-07   Sheet-Pan Chicken & Peppers  (serves 4)
+  2026-06-08   Poached Eggs in Tomato Sauce  (serves 4)
+  2026-06-09   Chickpea & Spinach Stew  (serves 4)
 
 $ python -m mealplanner.cli shopping
 
 Shopping list:
 
-  [ ] 1 cup  basmati rice
-  [ ] 1 pound  broccoli floret
-  [ ] 2 tablespoon  butter
-  [ ] 4  chicken breast
-  [ ] 1.5 cup  chicken stock
-  [ ] 6 tablespoon  cornstarch
+  [ ] 5  bell pepper
+  [ ] 2 can  canned tomato
+  [ ] 2 pound  chicken breast
+  [ ] 11 clove  garlic
+  [ ] 6 tablespoon  soy sauce
   …
 ```
 
@@ -111,7 +110,7 @@ the private data, the memory, the persisted artifact, and the exact arithmetic.
 
 Three ways, none requiring any particular app or format:
 
-1. **Just start** — 14 recipes ship in `data/recipes.seed.json`, so it plans a
+1. **Just start** — 16 recipes ship in `data/recipes.seed.json`, so it plans a
    week the moment you clone it.
 2. **Add as you go (the normal path)** — paste or describe a recipe in chat;
    Claude structures it and calls `add_recipe`. *"Save my chili: 2 lb ground
