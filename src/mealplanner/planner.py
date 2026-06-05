@@ -98,10 +98,12 @@ def plan_week(
             for c in chosen_cooks:
                 chosen_proteins |= recipe_proteins(c)
 
-        def score(r: Recipe):
+        # Bind chosen_proteins as a default so the closure captures this
+        # iteration's value (score is consumed immediately below).
+        def score(r: Recipe, _cp: set[str] = chosen_proteins):
             combined = overlap_score(r, chosen_cooks)
             if diversity_weight:
-                combined -= diversity_weight * len(recipe_proteins(r) & chosen_proteins)
+                combined -= diversity_weight * len(recipe_proteins(r) & _cp)
             return (combined, -(r.total_time_min or 0))
 
         pick = max(pool, key=score)

@@ -100,7 +100,7 @@ class TestDiversity:
         plan = plan_week(self.LIB, days=4, start_date=date(2026, 6, 8),
                          household_size=4, diversity_weight=5.0, main_course_only=False)
         proteins = self._cook_proteins(plan)
-        for a, b in zip(proteins, proteins[1:]):
+        for a, b in zip(proteins, proteins[1:], strict=False):
             assert not (a & b)
 
 

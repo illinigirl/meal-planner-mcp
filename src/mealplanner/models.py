@@ -43,7 +43,7 @@ class Recipe:
     source: str | None = None
 
     @classmethod
-    def from_dict(cls, d: dict) -> "Recipe":
+    def from_dict(cls, d: dict) -> Recipe:
         return cls(
             id=d["id"],
             title=d["title"],

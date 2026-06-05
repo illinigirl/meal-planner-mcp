@@ -57,8 +57,9 @@ transports.
 ## Run + test
 
 ```bash
-# Tests — pure core, run on the standard library alone (no install needed):
-python -m pytest -q                 # 37 tests
+# Tests — pure-core subset runs on stdlib; the tool-layer tests use the MCP SDK:
+pip install -e ".[test]"            # pytest + the MCP SDK
+python -m pytest -q                 # 75 tests
 
 # CLI — also stdlib-only; demos the whole flow without an MCP client:
 PYTHONPATH=src python -m mealplanner.cli list --max-time 30

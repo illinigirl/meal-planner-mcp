@@ -174,7 +174,7 @@ def aggregate(items: list[tuple[Ingredient, float]]) -> list[Ingredient]:
     None) collapse to a single entry. Same item in different units stays
     separate (no unit conversion — see module docstring).
     """
-    merged: "OrderedDict[tuple[str, str | None], Ingredient]" = OrderedDict()
+    merged: OrderedDict[tuple[str, str | None], Ingredient] = OrderedDict()
     for ing, scale in items:
         key = (canonical_item(ing.item), ing.unit)
         if key in merged:

@@ -9,7 +9,7 @@ fridge.
 No cloud, no API keys, no database. Clone it and it runs.
 
 ```bash
-python -m pytest -q                                   # 37 tests, stdlib only
+pip install -e ".[test]" && python -m pytest -q       # 75 tests
 PYTHONPATH=src python -m mealplanner.cli plan --days 7
 PYTHONPATH=src python -m mealplanner.cli shopping
 ```
@@ -137,7 +137,7 @@ weeknights under 30 minutes — then give me the shopping list."* — and iterat
 
 It's built to be worked in by an agent. Good first tasks, easiest first:
 
-1. **Run the tests** — `python -m pytest -q` (37, stdlib only).
+1. **Run the tests** — `pip install -e ".[test]" && python -m pytest -q` (75; the pure-core subset runs on stdlib alone, the tool-layer tests use the MCP SDK).
 2. **Improve the ingredient parser** to handle `1 (14 oz) can tomatoes` — see
    `ingredients.parse_ingredient` and add a test.
 3. **Add leftover mode B** (cook-once-eat-twice): give recipes `produces`/`uses`
