@@ -19,3 +19,25 @@ def test_server_exposes_expected_tools():
     }
     missing = {name for name in expected if not hasattr(server, name)}
     assert not missing, f"server missing tools: {missing}"
+
+
+def test_transport_defaults_to_stdio():
+    from mealplanner.server import _resolve_transport
+
+    assert _resolve_transport([])[0] == "stdio"
+
+
+def test_http_flag_selects_streamable_http():
+    from mealplanner.server import _resolve_transport
+
+    transport, host, port = _resolve_transport(["--http", "--port", "8765"])
+    assert transport == "streamable-http"
+    assert host == "127.0.0.1"
+    assert port == 8765
+
+
+def test_http_env_var_selects_streamable_http(monkeypatch):
+    from mealplanner.server import _resolve_transport
+
+    monkeypatch.setenv("MEAL_PLANNER_HTTP", "1")
+    assert _resolve_transport([])[0] == "streamable-http"

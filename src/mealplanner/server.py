@@ -13,6 +13,8 @@ recipe MCP'.
 
 from __future__ import annotations
 
+import argparse
+import os
 from datetime import date
 
 from mcp.server.fastmcp import FastMCP
@@ -221,8 +223,31 @@ def import_recipes(csv_path: str) -> dict:
     return {"imported": added}
 
 
-def main() -> None:
-    mcp.run()
+def _resolve_transport(argv=None) -> tuple[str, str, int]:
+    """Decide transport from CLI flags / env. Default is stdio (Claude Desktop
+    launches the server as a subprocess). `--http` (or MEAL_PLANNER_HTTP=1) serves
+    streamable-HTTP so the same server can be added as a custom *connector* by
+    URL — the same dual-transport pattern Magic Monitor uses (stdio for Desktop,
+    HTTP for remote). Factored out so it's unit-testable without binding a port.
+    """
+    parser = argparse.ArgumentParser(prog="meal-planner", description="Meal Planner MCP server")
+    parser.add_argument("--http", action="store_true",
+                        help="serve over streamable-HTTP (for use as a custom connector) instead of stdio")
+    parser.add_argument("--host", default=os.environ.get("MEAL_PLANNER_HOST", "127.0.0.1"))
+    parser.add_argument("--port", type=int, default=int(os.environ.get("MEAL_PLANNER_PORT", "8000")))
+    args = parser.parse_args(argv)
+    http = args.http or os.environ.get("MEAL_PLANNER_HTTP", "").lower() in {"1", "true", "yes"}
+    return ("streamable-http" if http else "stdio", args.host, args.port)
+
+
+def main(argv=None) -> None:
+    transport, host, port = _resolve_transport(argv)
+    if transport == "streamable-http":
+        mcp.settings.host = host
+        mcp.settings.port = port
+        mcp.run(transport="streamable-http")
+    else:
+        mcp.run()
 
 
 if __name__ == "__main__":

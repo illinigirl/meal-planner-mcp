@@ -106,6 +106,11 @@ Three paths, deliberately not tied to any one app or format:
   ships read-only so the repo runs cold; your history/plans/imported recipes go
   in a gitignored `state.json` in a user dir. Personal recipe data never lands
   in a public commit.
+- **Dual transport from one codebase.** `main()` defaults to stdio (Claude
+  Desktop launches it as a subprocess); `--http` / `MEAL_PLANNER_HTTP=1` serves
+  streamable-HTTP so the same server can be a remote custom connector. Transport
+  selection (`_resolve_transport`) is factored out so it's testable without
+  binding a port. Mirrors Magic Monitor's stdio + HTTPS dual transport.
 - **Conversational iteration is first-class.** `plan_week` makes the week;
   `swap_meal` / `remove_meal` are literal per-day overrides for "put tacos on
   Tuesday / skip Thursday." The rule that keeps edits predictable: only

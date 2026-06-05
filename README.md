@@ -93,22 +93,36 @@ imported recipes) lives in a gitignored `state.json` under
 
 ## Use it from Claude
 
-Add to your MCP client (e.g. Claude Desktop) config:
+The server runs over **two transports** from one codebase — stdio for a local
+Claude Desktop subprocess, or streamable-HTTP so it can be added as a remote
+*custom connector* by URL.
+
+**Local (stdio) — Claude Desktop.** After `pip install -e .`, add to your config:
 
 ```json
 {
   "mcpServers": {
     "meal-planner": {
-      "command": "python",
-      "args": ["-m", "mealplanner.server"],
-      "env": { "PYTHONPATH": "/path/to/meal-planner-mcp/src" }
+      "command": "/path/to/meal-planner-mcp/.venv/bin/meal-planner"
     }
   }
 }
 ```
 
+**As a custom connector (HTTP).** Run it as an HTTP server and point a connector
+at the URL:
+
+```bash
+meal-planner --http --port 8765          # or MEAL_PLANNER_HTTP=1
+# then add http://localhost:8765/mcp as a custom connector
+```
+
+(For a *remote* connector — claude.ai / mobile — host it behind a public HTTPS
+URL with auth, the same way a production MCP deployment would.)
+
 Then just talk: *"Plan us 7 dinners this week, nothing we had recently, keep
-weeknights under 30 minutes — then give me the shopping list."*
+weeknights under 30 minutes — then give me the shopping list."* — and iterate:
+*"swap Tuesday for something vegetarian," "skip Thursday."*
 
 ## For reviewers — drive it with Claude Code
 
