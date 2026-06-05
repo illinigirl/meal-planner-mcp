@@ -48,6 +48,16 @@ Shopping list:
 The MCP tools run the same logic — `plan_week` then `generate_shopping_list` —
 so in Claude Desktop you just ask for it in plain language.
 
+## In Claude Desktop
+
+Wired in as a local MCP server, Claude discovers the tools and drives them from a
+plain-language ask — here it picks up `plan_week`, calls it with `days: 5`, then
+explains the result and offers next steps:
+
+![Claude discovering the meal-planner MCP tools and calling plan_week with days=5](docs/claude-desktop-tools.jpeg)
+
+![The resulting 5-day plan, with Claude explaining the ingredient-overlap optimization and offering to swap a day or build the shopping list](docs/claude-desktop-plan.jpeg)
+
 ## Why an MCP (and not just asking Claude)?
 
 A tool only earns its place if it does something the model *can't*. This one
