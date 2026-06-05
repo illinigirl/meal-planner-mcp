@@ -20,7 +20,7 @@ from datetime import date
 from mcp.server.fastmcp import FastMCP
 
 from . import core, store
-from .exports import build_shopping_list, render_plan_markdown
+from .exports import build_shopping_list, render_plan_markdown, render_plan_text
 from .ingredients import aggregate  # noqa: F401  (re-exported for parity/tests)
 from .planner import plan_week as _plan_week
 
@@ -131,25 +131,31 @@ def generate_shopping_list() -> dict:
 
 
 @mcp.tool()
-def export_plan(path: str | None = None) -> dict:
-    """Write the current plan + shopping list to Markdown AND return the rendered
-    Markdown inline.
+def export_plan(path: str | None = None, format: str = "markdown") -> dict:
+    """Write the current plan + shopping list AND return the rendered content
+    inline.
 
-    With no `path`, writes to a known location under the data dir
-    (MEAL_PLANNER_DATA_DIR/meal-plans/<date>.md) — not the process cwd, which is
-    unpredictable when Claude Desktop launches the server. The `markdown` field
-    is always returned, so a remote caller who can't read the server's disk still
-    gets the content to display or save client-side."""
+    `format`: "markdown" (default — renders as a table + checklist in Claude and
+    note apps) or "text" (plain text for pasting into Notes / Reminders / a text
+    message). With no `path`, writes to a known location under the data dir
+    (MEAL_PLANNER_DATA_DIR/meal-plans/<date>.{md,txt}) — not the process cwd,
+    which is unpredictable when Claude Desktop launches the server. The `content`
+    field is always returned, so a remote caller who can't read the server's disk
+    still gets the result to display or save client-side."""
     plan = store.load_plan()
     if not plan:
         return {"error": "no current plan — call plan_week first"}
     idx = core.recipe_index(store.load_library())
     from pathlib import Path
-    md = render_plan_markdown(plan, idx, title=f"Meal Plan — week of {plan[0].date}")
-    out = Path(path) if path else store.export_default_path(plan[0].date)
+    title = f"Meal Plan — week of {plan[0].date}"
+    if format == "text":
+        content, ext = render_plan_text(plan, idx, title=title), "txt"
+    else:
+        content, ext = render_plan_markdown(plan, idx, title=title), "md"
+    out = Path(path) if path else store.export_default_path(plan[0].date, ext=ext)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(md)
-    return {"written": str(out), "markdown": md}
+    out.write_text(content)
+    return {"written": str(out), "format": format, "content": content}
 
 
 @mcp.tool()

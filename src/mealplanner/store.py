@@ -248,10 +248,10 @@ def import_plantoeat_content(content: str) -> int:
     return _add_parsed_recipes(parse_plantoeat_rows(rows))
 
 
-def export_default_path(first_date: str) -> Path:
+def export_default_path(first_date: str, ext: str = "md") -> Path:
     """Where export_plan writes when no path is given: a KNOWN location under the
     data dir (not the server's cwd, which is unpredictable when Claude Desktop
     launches the process). Creates the dir."""
     d = data_dir() / "meal-plans"
     d.mkdir(parents=True, exist_ok=True)
-    return d / f"{first_date}.md"
+    return d / f"{first_date}.{ext}"

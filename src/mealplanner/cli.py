@@ -14,7 +14,7 @@ import argparse
 from datetime import date
 
 from . import core, store
-from .exports import build_shopping_list, render_plan_markdown
+from .exports import build_shopping_list, render_plan_markdown, render_plan_text
 from .ingredients import Ingredient  # noqa: F401
 from .planner import plan_week
 
@@ -70,9 +70,14 @@ def cmd_export(args):
         return
     from pathlib import Path
     idx = core.recipe_index(store.load_library())
-    out = Path(args.path) if args.path else store.export_default_path(plan[0].date)
+    title = f"Meal Plan — week of {plan[0].date}"
+    if args.format == "text":
+        content, ext = render_plan_text(plan, idx, title=title), "txt"
+    else:
+        content, ext = render_plan_markdown(plan, idx, title=title), "md"
+    out = Path(args.path) if args.path else store.export_default_path(plan[0].date, ext=ext)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render_plan_markdown(plan, idx, title=f"Meal Plan — week of {plan[0].date}"))
+    out.write_text(content)
     print(f"Wrote {out}")
 
 
@@ -98,8 +103,9 @@ def build_parser() -> argparse.ArgumentParser:
     ps = sub.add_parser("shopping", help="shopping list for the current plan")
     ps.set_defaults(func=cmd_shopping)
 
-    pe = sub.add_parser("export", help="write plan + list to Markdown")
+    pe = sub.add_parser("export", help="write plan + list to a file")
     pe.add_argument("path", nargs="?")
+    pe.add_argument("--format", choices=["markdown", "text"], default="markdown")
     pe.set_defaults(func=cmd_export)
 
     pi = sub.add_parser("import", help="import a Plan to Eat CSV")

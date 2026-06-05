@@ -44,10 +44,12 @@ the private data, the memory, the persisted artifact, and the exact arithmetic.
   then `swap_meal`.)
 - **`generate_shopping_list`** — merges and scales ingredients across the plan's
   cook days, deduped, with no silent unit conversion.
-- **`export_plan`** — writes the week + shopping list to Markdown **and returns
-  it inline**, so a remote caller who can't read the server's disk still gets the
-  content. With no path it writes to a known location under the data dir (not the
-  process cwd, which is unpredictable when Claude Desktop launches the server).
+- **`export_plan`** — writes the week + shopping list **and returns it inline**
+  (so a remote caller who can't read the server's disk still gets it).
+  `format="markdown"` (table + checklist, renders in Claude and note apps) or
+  `"text"` (plain text for pasting into Notes / Reminders). With no path it writes
+  to a known location under the data dir (not the process cwd, which is
+  unpredictable when Claude Desktop launches the server).
 - **`set_course`** — recategorize a recipe (mark a stray import as a `Sauce` so
   it stops landing in dinner slots). Curation; the planner relies on this
   normalized field, never on title guessing.

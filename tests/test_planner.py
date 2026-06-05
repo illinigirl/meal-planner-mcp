@@ -4,7 +4,7 @@ Plan to Eat CSV parser."""
 from datetime import date
 
 from mealplanner.core import recipe_index, recipe_proteins
-from mealplanner.exports import build_shopping_list, render_plan_markdown
+from mealplanner.exports import build_shopping_list, render_plan_markdown, render_plan_text
 from mealplanner.models import HistoryEntry, Ingredient, Recipe
 from mealplanner.planner import cook_days, nights_covered, plan_week
 from mealplanner.store import parse_plantoeat_rows
@@ -121,6 +121,15 @@ class TestShoppingList:
         assert "# Test Week" in md
         assert "## The week" in md
         assert "## Shopping list" in md
+
+    def test_text_render_has_no_markdown_syntax(self, library):
+        plan = plan_week(library, days=5, start_date=date(2026, 6, 8))
+        txt = render_plan_text(plan, recipe_index(library), title="Test Week")
+        assert "THE WEEK" in txt
+        assert "SHOPPING LIST" in txt
+        # plain text — no markdown table pipes or heading hashes
+        assert "|" not in txt
+        assert "#" not in txt
 
 
 class TestPlanToEatParse:

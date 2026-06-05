@@ -66,3 +66,30 @@ def render_plan_markdown(
         lines.append(f"- [ ] {_fmt_ingredient(ing)}")
     lines.append("")
     return "\n".join(lines)
+
+
+def render_plan_text(
+    plan: list[PlanDay], recipe_idx: dict[str, Recipe], *, title: str = "Meal Plan"
+) -> str:
+    """Plain-text version — no Markdown syntax — for pasting straight into Notes,
+    Reminders, or a text message. Same content as the Markdown render."""
+    lines = [title, "=" * len(title), "", "THE WEEK", ""]
+    for day in plan:
+        recipe = recipe_idx.get(day.recipe_id) if day.recipe_id else None
+        name = recipe.title if recipe else "(unplanned)"
+        if day.leftover_of:
+            lines.append(f"  {day.date}  {name} (leftovers from {day.leftover_of})")
+        elif recipe:
+            extra = f" - serves {recipe.servings}"
+            if recipe.total_time_min:
+                extra += f", {recipe.total_time_min} min"
+            lines.append(f"  {day.date}  {name}{extra}")
+        else:
+            lines.append(f"  {day.date}  (unplanned)")
+
+    shopping = build_shopping_list(plan, recipe_idx)
+    lines += ["", "SHOPPING LIST", ""]
+    for ing in sorted(shopping, key=lambda i: i.item):
+        lines.append(f"  [ ] {_fmt_ingredient(ing)}")
+    lines.append("")
+    return "\n".join(lines)

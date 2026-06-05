@@ -61,6 +61,10 @@ def test_export_default_path_under_data_dir(tmp_state):
     assert p.parent.is_dir()                       # created
 
 
+def test_export_default_path_honors_ext(tmp_state):
+    assert store.export_default_path("2026-06-08", ext="txt").name == "2026-06-08.txt"
+
+
 def test_set_course_updates_custom_recipe(tmp_state):
     store.add_custom_recipe(
         Recipe(id="mystery-jus", title="Mystery Jus", servings=1, ingredients=[], course=None)
