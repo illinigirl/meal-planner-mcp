@@ -15,6 +15,39 @@ python -m mealplanner.cli plan --days 7               # try the planner
 python -m mealplanner.cli shopping                    # and the shopping list
 ```
 
+## Example
+
+It ships with a seed library, so it does something the moment you clone it — no
+data entry. The planner chains dishes that **share ingredients** (note the two
+fried-rice nights) and the shopping list is **consolidated across the week**:
+
+```text
+$ python -m mealplanner.cli plan --days 5
+
+Plan for 5 days (household 4):
+
+  2026-06-05   Chicken Fried Rice  (serves 1)
+  2026-06-06   Kimchi Fried Rice  (serves 1)
+  2026-06-07   Pressure Cooker Honey Sesame Chicken  (serves 6)
+  2026-06-08   Pressure Cooker Beef and Broccoli  (serves 6)
+  2026-06-09   Crispy Asian Chicken Bites  (serves 4)
+
+$ python -m mealplanner.cli shopping
+
+Shopping list:
+
+  [ ] 1 cup  basmati rice
+  [ ] 1 pound  broccoli floret
+  [ ] 2 tablespoon  butter
+  [ ] 4  chicken breast
+  [ ] 1.5 cup  chicken stock
+  [ ] 6 tablespoon  cornstarch
+  …
+```
+
+The MCP tools run the same logic — `plan_week` then `generate_shopping_list` —
+so in Claude Desktop you just ask for it in plain language.
+
 ## Why an MCP (and not just asking Claude)?
 
 A tool only earns its place if it does something the model *can't*. This one
