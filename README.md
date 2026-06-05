@@ -9,9 +9,10 @@ fridge.
 No cloud, no API keys, no database. Clone it and it runs.
 
 ```bash
-pip install -e ".[test]" && python -m pytest -q       # 75 tests
-PYTHONPATH=src python -m mealplanner.cli plan --days 7
-PYTHONPATH=src python -m mealplanner.cli shopping
+python3 -m venv .venv && source .venv/bin/activate    # isolate deps
+pip install -e ".[test]" && pytest -q                 # 75 tests
+python -m mealplanner.cli plan --days 7               # try the planner
+python -m mealplanner.cli shopping                    # and the shopping list
 ```
 
 ## Why an MCP (and not just asking Claude)?
@@ -106,13 +107,24 @@ The server runs over **two transports** from one codebase — stdio for a local
 Claude Desktop subprocess, or streamable-HTTP so it can be added as a remote
 *custom connector* by URL.
 
-**Local (stdio) — Claude Desktop.** After `pip install -e .`, add to your config:
+**Local (stdio) — Claude Desktop.** Clone, make a virtualenv, and install — the
+install puts a `meal-planner` console script inside `.venv/bin`:
+
+```bash
+git clone https://github.com/illinigirl/meal-planner-mcp
+cd meal-planner-mcp
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e .
+```
+
+Then point your `claude_desktop_config.json` at that script (absolute path), and
+restart Claude Desktop — the **meal-planner** tools will appear:
 
 ```json
 {
   "mcpServers": {
     "meal-planner": {
-      "command": "/path/to/meal-planner-mcp/.venv/bin/meal-planner"
+      "command": "/absolute/path/to/meal-planner-mcp/.venv/bin/meal-planner"
     }
   }
 }
