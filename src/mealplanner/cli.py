@@ -38,7 +38,8 @@ def cmd_list(args):
 def cmd_plan(args):
     lib = store.load_library()
     plan = plan_week(lib, days=args.days, start_date=date.today(),
-                     household_size=args.household, history=store.history_entries())
+                     household_size=args.household, history=store.history_entries(),
+                     diversity_weight=args.diversity)
     store.save_plan(plan)
     idx = core.recipe_index(lib)
     print(f"Plan for {args.days} days (household {args.household}):\n")
@@ -98,6 +99,8 @@ def build_parser() -> argparse.ArgumentParser:
     pp = sub.add_parser("plan", help="build + save a meal plan")
     pp.add_argument("--days", type=int, default=7)
     pp.add_argument("--household", type=int, default=4)
+    pp.add_argument("--diversity", type=float, default=0.0,
+                    help="penalty for repeating a protein in the week (0=off, ~1 gentle, 2-3 strong)")
     pp.set_defaults(func=cmd_plan)
 
     ps = sub.add_parser("shopping", help="shopping list for the current plan")
