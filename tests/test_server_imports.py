@@ -14,7 +14,7 @@ def test_server_exposes_expected_tools():
     expected = {
         "list_recipes", "get_recipe", "suggest_recipes", "plan_week",
         "get_current_plan", "generate_shopping_list", "export_plan",
-        "record_cooked", "add_recipe", "set_course", "swap_meal",
+        "record_cooked", "add_recipe", "add_recipes", "set_course", "swap_meal",
         "remove_meal", "import_recipes",
     }
     missing = {name for name in expected if not hasattr(server, name)}

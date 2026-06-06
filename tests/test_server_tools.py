@@ -74,6 +74,24 @@ def test_add_recipe_and_set_course(srv):
     assert srv.set_course("beef-tacos", "Side")["updated"] is False
 
 
+def test_add_recipes_bulk(srv):
+    res = srv.add_recipes([
+        {"title": "Test Tofu Bowl", "ingredients": ["1 block tofu", "2 cups rice"], "course": "Dinner"},
+        {"title": "Test Tofu Bowl", "ingredients": ["1 block tofu"]},   # duplicate title
+        {"title": "", "ingredients": ["x"]},                            # no title -> skipped
+        {"title": "No Ingredients Here"},                               # no ingredients -> skipped
+    ])
+    assert res["added"] == 2
+    assert res["skipped"] == 2
+    ids = [r["recipe_id"] for r in res["recipes"]]
+    assert ids[0] != ids[1]                              # de-duped within the batch
+    assert srv.get_recipe(ids[0])["title"] == "Test Tofu Bowl"
+    assert srv.get_recipe(ids[1])["title"] == "Test Tofu Bowl"
+    # bulk-added recipes land in the library (so they're plannable)
+    titles = [r["title"] for r in srv.list_recipes()["recipes"]]
+    assert titles.count("Test Tofu Bowl") == 2
+
+
 def test_record_cooked_then_avoided(srv):
     srv.record_cooked("beef-tacos", "2026-06-07")
     plan = srv.plan_week(days=5, start_date="2026-06-08", avoid_recent_days=14)

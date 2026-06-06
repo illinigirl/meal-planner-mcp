@@ -196,6 +196,51 @@ def add_recipe(title: str, ingredients: list[str], servings: int = 4,
 
 
 @mcp.tool()
+def add_recipes(recipes: list[dict]) -> dict:
+    """Bulk-add many recipes in one call — the fast way to build a starter library
+    when you DON'T have a Plan to Eat export to import.
+
+    The intended flow: generate a batch tailored to the user's tastes (their
+    cuisines, constraints, what they actually cook — don't just produce generic
+    recipes they won't make), let them review it, then save the batch here. The
+    planner only earns its keep over recipes the user genuinely likes.
+
+    Each item: {"title": str, "ingredients": [free-text lines], plus optional
+    "servings", "tags", "total_time_min", "cuisine", "course", "directions"}.
+    Ingredient lines are parsed like add_recipe so they feed the shopping-list
+    math. Items missing a title or ingredients are skipped (and reported); ids are
+    de-duplicated against the library and within the batch. One state write for the
+    whole batch. Returns the saved recipes + counts.
+    """
+    from .ingredients import parse_ingredient
+    from .models import Recipe
+
+    built: list[Recipe] = []
+    meta: list[tuple[str, int]] = []
+    skipped: list[dict] = []
+    for r in recipes:
+        title = (r.get("title") or "").strip()
+        lines = r.get("ingredients") or []
+        if not title or not lines:
+            skipped.append({"title": title or "(missing)", "reason": "needs a title and ingredients"})
+            continue
+        parsed = [parse_ingredient(line) for line in lines]
+        built.append(Recipe(
+            id=store.slugify(title), title=title, servings=int(r.get("servings") or 4),
+            ingredients=parsed, tags=r.get("tags") or [], total_time_min=r.get("total_time_min"),
+            cuisine=r.get("cuisine"), course=r.get("course"), directions=r.get("directions")))
+        meta.append((title, len(parsed)))
+    ids = store.add_custom_recipes(built)
+    return {
+        "added": len(ids),
+        "skipped": len(skipped),
+        "recipes": [{"recipe_id": rid, "title": t, "ingredients_parsed": n}
+                    for rid, (t, n) in zip(ids, meta, strict=True)],
+        "skipped_detail": skipped,
+    }
+
+
+@mcp.tool()
 def set_course(recipe_id: str, course: str) -> dict:
     """Recategorize a recipe's course — curation for imports that came in
     uncategorized (e.g. mark a sauce as "Sauce" so it stops landing in dinner

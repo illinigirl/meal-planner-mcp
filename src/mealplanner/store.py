@@ -126,6 +126,34 @@ def add_custom_recipe(recipe: Recipe) -> None:
     save_state(state)
 
 
+def slugify(title: str) -> str:
+    """Public slug helper, for callers building a batch of recipes (each base slug
+    is made unique on insert by add_custom_recipes)."""
+    return _slug(title)
+
+
+def add_custom_recipes(recipes: list[Recipe]) -> list[str]:
+    """Append many recipes in a SINGLE state write — the bulk path for building a
+    starter library. Each recipe's id is treated as a base slug and made unique
+    against the seed, the existing custom recipes, AND the others in this same
+    batch. Returns the final ids, in order."""
+    state = load_state()
+    taken = existing_ids()
+    out_ids: list[str] = []
+    for r in recipes:
+        base = r.id or "recipe"
+        candidate, n = base, 2
+        while candidate in taken:
+            candidate, n = f"{base}-{n}", n + 1
+        taken.add(candidate)
+        record = _recipe_to_dict(r)
+        record["id"] = candidate
+        state.setdefault("custom_recipes", []).append(record)
+        out_ids.append(candidate)
+    save_state(state)
+    return out_ids
+
+
 def set_recipe_course(recipe_id: str, course: str) -> bool:
     """Curate a recipe's course (e.g. mark an uncategorized import as a sauce so
     the planner stops treating it as a dinner). Only custom recipes are editable;

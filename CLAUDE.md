@@ -78,12 +78,19 @@ data: `export MEAL_PLANNER_DATA_DIR=/tmp/mp`.
 
 ## Seeding the library
 
-Three paths, deliberately not tied to any one app or format:
+Four paths, deliberately not tied to any one app or format:
 - **Bundled seed** (`data/recipes.seed.json`) — ships read-only so the repo
   runs cold.
 - **`add_recipe`** — the everyday path. Free-text ingredient lines are run
   through `parse_ingredient`; Claude fills the fields from a pasted/described
   recipe. This is what a normal user uses; no file or format involved.
+- **`add_recipes`** — bulk-add a batch in one call: the fast cold-start when
+  there's no Plan to Eat export. Generation is the LLM's job, *not* a tool —
+  Claude produces a batch from the user's tastes, the user reviews, then this
+  persists them all (dedup against library + within the batch, one state write).
+  Keep generation preference-driven; a pile of generic recipes the user won't
+  cook gives the planner nothing real to optimize over (the "plausible-but-wrong
+  AI output" failure mode — see TESTING/notes).
 - **`import_plantoeat_csv`** — an *optional* bulk shortcut for an existing Plan
   to Eat export. It is one importer, not the project's identity; other formats
   (Paprika, Mealie, JSON) are a documented seam (`store.import_*`).

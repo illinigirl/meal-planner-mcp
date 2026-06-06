@@ -108,7 +108,7 @@ the private data, the memory, the persisted artifact, and the exact arithmetic.
 
 ## Seeding your library
 
-Three ways, none requiring any particular app or format:
+Four ways, none requiring any particular app or format:
 
 1. **Just start** — 16 recipes ship in `data/recipes.seed.json`, so it plans a
    week the moment you clone it.
@@ -116,7 +116,12 @@ Three ways, none requiring any particular app or format:
    Claude structures it and calls `add_recipe`. *"Save my chili: 2 lb ground
    beef, an onion, 2 cans tomatoes, kidney beans, chili powder — serves 8."* No
    CSV, no schema.
-3. **Bulk migrate (optional)** — already have a Plan to Eat export? `import_recipes`
+3. **Generate a starter set (no export needed)** — don't want to add them one by
+   one? Ask Claude to generate a batch from your tastes — *"25 quick weeknight
+   dinners I'd like, mostly vegetarian"* — review it, and it saves them all in one
+   `add_recipes` call. The planner optimizes over recipes you'll actually cook, so
+   keep the batch to food you'd really make rather than generic filler.
+4. **Bulk migrate (optional)** — already have a Plan to Eat export? `import_recipes`
    loads it in one offline pass. It's a convenience, not a requirement — and
    adding other formats (Paprika, Mealie, plain JSON) is a documented seam.
 
