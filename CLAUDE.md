@@ -182,3 +182,73 @@ state. The only risk is Claude routing a request to the wrong one. Mitigated
 here by **distinct, planning-flavored tool names** and clear tool descriptions
 so the lanes are obvious (this server = *planning/optimization*; a storage
 server = *save/schedule/shop*).
+
+## Working in this repo with Claude Code
+
+This repo is built to be driven by an agent, and the `.claude/` directory makes
+that explicit:
+
+- **`/add-tool <what it would do>`** — gates a proposed new tool behind the
+  four-part test above. If a capability fails all four, the command refuses to
+  add a tool and shows how to compose existing ones instead. Tool design as a
+  guardrail, not an afterthought.
+- **`/extend [seam]`** — implements one of the *Deliberate simplifications*
+  seams, test-first, honoring the house rules below.
+- **PostToolUse lint hook** (`.claude/settings.json` → `.claude/hooks/lint-changed.sh`)
+  — after any edit that touches Python, runs `ruff check` on the package and
+  feeds failures straight back to the agent. The script reads the tool-call JSON
+  on stdin, only fires on `.py` files, and no-ops gracefully if ruff isn't
+  installed — safe to ship in a shared repo.
+
+### How this repo is worked (conventions)
+
+The same discipline that keeps the code clean keeps an agent productive:
+
+- **Architect first, then implement.** Decide the seam and the contract before
+  writing code; for a new tool, run the four-part test *out loud* before any
+  edit.
+- **Root cause before fixes.** Nothing ships until you can state, in one
+  sentence, *why* the bug happens. "Add a guard / wrap in try-except / retry"
+  are symptom patches — allowed only after the root cause is named, and only if
+  they're the right response to it.
+- **Three failed fixes → stop and question the design.** If three attempts each
+  expose a new problem, the pattern is wrong, not the next fix.
+- **Pure logic stays testable.** New behavior goes in a pure module with a
+  direct test; adapters stay thin. Reaching for I/O inside the logic is the
+  smell.
+- **No silent magic.** No silent unit conversion, no title-keyword
+  classification, no private data in committed output. Surprises are bugs.
+
+### Lessons learned (real bugs + their root cause)
+
+A short, honest log — each one already shipped a fix here. Kept as a reminder of
+the *failure mode*, not just the patch.
+
+- **Singularizer over-stripped `asparagus` → `asparagu`.** Root cause: a rule
+  that strips a trailing `s` to singularize treats genuinely-singular words
+  ending in `s` as plurals. Fix: exceptions in `_SINGULAR`. Lesson: rule-table
+  morphology needs an escape hatch for irregulars (or swap in `inflect`).
+  (`5819dc2`)
+- **The committed README example leaked private recipes.** Root cause: the
+  Example block was generated from a real `state.json` library instead of the
+  bundled seed, so personal data rode into a public commit. Fix: regenerate all
+  sample output from `data/recipes.seed.json` only. Lesson generalizes — any
+  committed sample output must come from bundled fixtures, never your mutable
+  state. (`795614e`)
+- **`export_plan` wrote to an unpredictable place.** Root cause: writing to the
+  process cwd is meaningless when Claude Desktop launches the server as a
+  subprocess (its cwd isn't yours), and a remote caller can't read the server's
+  disk at all. Fix: default to a known path under the data dir AND return the
+  rendered Markdown inline. Lesson: an MCP tool's side effects must make sense
+  for a caller who isn't on the same machine. (`63f9ad4`)
+- **Title-based course classification misreads dishes.** Root cause:
+  keyword-matching a title drops "Noodles with Sesame Sauce" into the wrong
+  slot. Fix: classify on a normalized `course` field every ingest path fills;
+  unknown → treat as a main so a real dinner is never silently dropped.
+  (`71f7dec`)
+- **Bulk generation is plausible-but-wrong-prone.** Root cause: asking the model
+  to generate a big recipe batch yields generic filler the user won't cook,
+  which gives the planner nothing real to optimize over. Mitigation: keep
+  generation preference-driven and user-reviewed — `add_recipes` only
+  *persists*, it never *invents*. (The four-part test in action: generation is
+  the LLM's job, not a tool's.)
