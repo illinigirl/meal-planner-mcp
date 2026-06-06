@@ -10,7 +10,7 @@ No cloud, no API keys, no database. Clone it and it runs.
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate    # isolate deps
-pip install -e ".[test]" && pytest -q                 # 75 tests
+pip install -e ".[test]" && pytest -q                 # 76 tests
 python -m mealplanner.cli plan --days 7               # try the planner
 python -m mealplanner.cli shopping                    # and the shopping list
 ```
@@ -101,6 +101,9 @@ the private data, the memory, the persisted artifact, and the exact arithmetic.
   powers avoid-repeats.
 - **`add_recipe`** — save one recipe from free text. The everyday way to build
   your library — no file or format needed.
+- **`add_recipes`** — bulk-add a whole batch in one call: the fast way to build a
+  starter library with no Plan to Eat export. Generate a batch from your tastes,
+  review it, and save them all at once (Claude generates; the tool just persists).
 - **`import_recipes`** — optional bulk shortcut for an existing Plan to Eat
   export: by `csv_path` (a file on the server — local use) or `csv_content`
   (pasted CSV text — works for a remote caller with no server-disk access).
