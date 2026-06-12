@@ -76,6 +76,32 @@ Mutable state lives in `MEAL_PLANNER_DATA_DIR` (default `~/.meal-planner/`),
 not the repo. Set it to a temp dir to experiment without touching your real
 data: `export MEAL_PLANNER_DATA_DIR=/tmp/mp`.
 
+## Test coverage standing orders
+
+Agent-written coverage has a predictable fingerprint: pure cores near 100%,
+the same gaps everywhere else. Before calling any feature done, check every
+dimension — each is the negative space agents skip by default:
+
+- **Empty / degenerate:** the zero-state case is tested (empty library,
+  plan a week with zero candidates, fresh state).
+- **Boundary:** limits tested *at* the boundary (0, 1, exactly-at-cap;
+  `household_size <= 0`).
+- **Error paths:** every defensive branch executes in at least one test —
+  corrupt `state.json`, malformed import row, bad `start_date`. If the
+  code handles it, a test proves it; if a tool boundary *doesn't* handle
+  an obvious bad input, that's a bug to fix, not skip.
+- **Scale:** at least one larger-library fixture (the greedy planner is
+  O(days × library × chosen) — pin the realistic-import case).
+- **Time:** no direct clock reads in logic under test; default-today
+  paths at the tool layer get their own test.
+- **Adapters:** the CLI command bodies get smoke tests (`main([...])` +
+  capsys against the sandboxed data dir) — pure-core coverage doesn't
+  protect argparse plumbing or output formatting.
+- **Tests must be able to fail:** no assertions that survive deleting the
+  behavior; if a test has never been red, prove it can be.
+
+Run `/coverage-audit` before calling a surface ship-ready.
+
 ## Seeding the library
 
 Four paths, deliberately not tied to any one app or format:
